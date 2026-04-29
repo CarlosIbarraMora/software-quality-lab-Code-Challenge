@@ -23,7 +23,6 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED) // HTTP 201: recurso creado exitosamente
     ApiResponse<UserWrapper> registerUser(@RequestBody UserRequest request) {
-        // TODO: llamar a userService.registerUser, envolver en ApiResponse y regresar
         var savedUser = userService.registerUser(request);
         return new ApiResponse<>("New user created", new UserWrapper(savedUser),null);
     }
@@ -32,8 +31,7 @@ public class UserController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK) // HTTP 200: solicitud exitosa
     ApiResponse<UserWrapper> getUserById(@PathVariable Long id) {
-        // TODO: llamar a userService.getUserById, envolver en ApiResponse y regresar
-        throw new UnsupportedOperationException("TODO: implementar endpoint getUserById");
+        return new ApiResponse<>("User with ID : " + id + "was founded", new UserWrapper(userService.getUserById(id)), null);
     }
 
     // PATCH /users/{id}/suspend — suspender un usuario activo
