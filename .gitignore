@@ -12,6 +12,8 @@
 /dataSources/
 /dataSources.local.xml
 .idea
+build
+
 
 # Default ignored files
 /shelf/

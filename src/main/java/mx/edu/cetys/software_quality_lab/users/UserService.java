@@ -124,7 +124,13 @@ public class UserService {
             throw new UserNotFoundException("The user with ID : " + id + "wasnt found");
         }
 
+
         var user = foundedUser.get();
+
+        if(user.getStatus().toString().equals("SUSPENDED")){
+            throw new InvalidUserDataException("The user was already suspended");
+        }
+
         user.setStatus(UserStatus.SUSPENDED);
         userRepository.save(user);
 
@@ -151,11 +157,10 @@ public class UserService {
 
     private boolean allIsLowerCaseOrDigitOrGuion(String username){
         for(char c : username.toCharArray()){
-            if(!Character.isLowerCase(c) || !Character.isDigit(c) || c != '_'){
+            if(!(Character.isLowerCase(c) || Character.isDigit(c) || c == '_')){
                 return false;
             }
         }
-
         return true;
     }
 

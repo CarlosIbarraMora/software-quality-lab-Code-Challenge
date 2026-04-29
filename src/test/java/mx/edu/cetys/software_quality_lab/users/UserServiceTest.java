@@ -34,7 +34,7 @@ public class UserServiceTest {
 
     // ─── Caso exitoso ─────────────────────────────────────────────────────────
 
-    UserController.UserRequest request = new UserController.UserRequest("andypro", "Andres", "Silva", "6682359422", "Andy#b.c", 14);
+    UserController.UserRequest request = new UserController.UserRequest("andypro", "Andres", "Silva", "6682359422", "str4nger#tst.vld", 14);
     private User buildMockSavedUser(Long id, String username, String firstName, String lastName, String phone, String email, Integer age, UserStatus status) {
         User user = new User(username, firstName, lastName, phone, email, age);
         user.setId(id);
@@ -57,6 +57,7 @@ public class UserServiceTest {
 
         when(userRepository.existsByUsername(request.username())).thenReturn(false);
         when(userRepository.save(any())).thenReturn(mockedUser);
+        when(emailValidatorService.isValid(any())).thenReturn(true);
         // act — llamar a userService.registerUser(request)
         var response = userService.registerUser(request);
         // assert — verificar id, username, status == "ACTIVE"; confirmar que save fue llamado una vez
@@ -66,7 +67,7 @@ public class UserServiceTest {
         assertEquals("Andres", response.firstName());
         assertEquals("Silva", response.lastName());
         assertEquals("6682359422", response.phone());
-        assertEquals("Andy#b.c", response.email());
+        assertEquals("str4nger#tst.vld", response.email());
         assertEquals(14 , response.age());
         assertEquals(UserStatus.ACTIVE.toString(), response.status());
     }
@@ -96,7 +97,7 @@ public class UserServiceTest {
         assertEquals("Andres", response.firstName());
         assertEquals("Silva", response.lastName());
         assertEquals("6682359422", response.phone());
-        assertEquals("Andy#b.c", response.email());
+        assertEquals("str4nger#tst.vld", response.email());
         assertEquals(14 , response.age());
         assertEquals(UserStatus.ACTIVE.toString(), response.status());
     }
@@ -124,7 +125,7 @@ public class UserServiceTest {
         assertEquals("Andres", response.firstName());
         assertEquals("Silva", response.lastName());
         assertEquals("6682359422", response.phone());
-        assertEquals("Andy#b.c", response.email());
+        assertEquals("str4nger#tst.vld", response.email());
         assertEquals(14 , response.age());
         assertEquals(UserStatus.SUSPENDED.toString(), response.status());
     }
@@ -134,7 +135,7 @@ public class UserServiceTest {
     @Test
     void shouldThrowWhenUsernameTooShort() {
         // Construir request con username de 4 caracteres
-        UserController.UserRequest badRequest = new UserController.UserRequest("andy", "Andres", "Silva", "6682359422", "Andy#b.c", 14);
+        UserController.UserRequest badRequest = new UserController.UserRequest("andy", "Andres", "Silva", "6682359422", "str4nger#tst.vld", 14);
 
         // assertThrows InvalidUserDataException
         assertThrows(InvalidUserDataException.class, () -> userService.registerUser(badRequest));
@@ -277,7 +278,7 @@ public class UserServiceTest {
         assertThrows(InvalidUserDataException.class, () -> userService.registerUser(request));
 
         // verificar que emailValidatorService.isValid fue llamado (verify)
-        verify(emailValidatorService).isValid("blabla");
+        verify(emailValidatorService, times(1)).isValid(any());
 
     }
 
@@ -303,7 +304,7 @@ public class UserServiceTest {
         // mockear userRepository.findById para que regrese Optional.empty()
         when(userRepository.findById(any())).thenReturn(Optional.empty());
         // assertThrows UserNotFoundException
-        assertThrows(UserNotFoundException.class, () -> userService.registerUser(request));
+        assertThrows(UserNotFoundException.class, () -> userService.getUserById(1L));
     }
 
     @Test
@@ -315,14 +316,14 @@ public class UserServiceTest {
         user.setFirstName("Andres");
         user.setLastName("Silva");
         user.setPhone("6682359422");
-        user.setEmail("Andy#b.c");
+        user.setEmail("str4nger#tst.vld");
         user.setAge(14);
         user.setStatus(UserStatus.SUSPENDED);
 
         when(userRepository.findById(any())).thenReturn(Optional.of(user));
 
         // assertThrows InvalidUserDataException
-        assertThrows(InvalidUserDataException.class, () -> userRepository.findById(1L));
+        assertThrows(InvalidUserDataException.class, () -> userService.suspendUser(1L));
 
     }
 }
