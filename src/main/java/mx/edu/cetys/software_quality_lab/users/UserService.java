@@ -141,7 +141,7 @@ public class UserService {
                 user.getPhone(),
                 user.getEmail(),
                 user.getAge(),
-                user.getStatus()
+                user.getStatus().toString()
         );
     }
 
