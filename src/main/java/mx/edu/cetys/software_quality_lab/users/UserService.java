@@ -119,7 +119,16 @@ public class UserService {
     UserController.UserResponse suspendUser(Long id) {
         log.info("Suspendiendo usuario, id={}", id);
         // TODO: buscar usuario, validar status, cambiar a SUSPENDED, guardar, mapear y regresar
-        throw new UnsupportedOperationException("TODO: implementar suspendUser");
+        Optional<User> foundedUser = userRepository.findById(id);
+        if(foundedUser.isEmpty()){
+            throw new UserNotFoundException("The user with ID : " + id + "wasnt found");
+        }
+
+        var user = foundedUser.get();
+        user.setStatus(UserStatus.SUSPENDED);
+        userRepository.save(user);
+
+        return mapToResponse(user);
     }
 
     private UserController.UserResponse mapToResponse(User user) {

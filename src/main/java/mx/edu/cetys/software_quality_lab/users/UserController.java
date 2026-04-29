@@ -38,7 +38,6 @@ public class UserController {
     @PatchMapping("/{id}/suspend")
     @ResponseStatus(HttpStatus.OK)
     ApiResponse<UserWrapper> suspendUser(@PathVariable Long id) {
-        // TODO: llamar a userService.suspendUser, envolver en ApiResponse y regresar
-        throw new UnsupportedOperationException("TODO: implementar endpoint suspendUser");
+        return new ApiResponse<>("User suspended ", new UserWrapper(userService.suspendUser(id)), null));
     }
 }
