@@ -10,7 +10,7 @@ public class UserController {
 
     // DTOs (Data Transfer Objects) — definen la forma del request y del response
     record UserRequest(String username, String firstName, String lastName, String phone, String email, Integer age) {}
-    record UserResponse(Long id, String username, String firstName, String lastName, String phone, String email, Integer age, String status) {}
+    record UserResponse(Long id, String username, String firstName, String lastName, String phone, String email, Integer age, UserStatus status) {}
     record UserWrapper(UserResponse user) {}
 
     private final UserService userService;
@@ -24,7 +24,8 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED) // HTTP 201: recurso creado exitosamente
     ApiResponse<UserWrapper> registerUser(@RequestBody UserRequest request) {
         // TODO: llamar a userService.registerUser, envolver en ApiResponse y regresar
-        throw new UnsupportedOperationException("TODO: implementar endpoint registerUser");
+        var savedUser = userService.registerUser(request);
+        return new ApiResponse<>("New user created", new UserWrapper(savedUser),null);
     }
 
     // GET /users/{id} — obtener un usuario por ID

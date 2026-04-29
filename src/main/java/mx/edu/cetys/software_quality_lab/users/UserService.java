@@ -1,5 +1,7 @@
 package mx.edu.cetys.software_quality_lab.users;
 
+import mx.edu.cetys.software_quality_lab.users.exceptions.DuplicateUsernameException;
+import mx.edu.cetys.software_quality_lab.users.exceptions.InvalidUserDataException;
 import mx.edu.cetys.software_quality_lab.validators.EmailValidatorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +38,57 @@ public class UserService {
     UserController.UserResponse registerUser(UserController.UserRequest request) {
         log.info("Iniciando registro de usuario, username={}", request.username());
         // TODO: implementar las reglas 1-7, luego guardar en BD y mapear la respuesta
-        throw new UnsupportedOperationException("TODO: implementar registerUser");
+        String username = request.username();
+
+        //1.First Rule
+        if((username.length() < 5 || username.length() > 20) || (!checkStartAndEnd(username) || (!allIsLowerCaseOrDigitOrGuion(username)))){
+            throw new InvalidUserDataException("The username is invalid");
+        }
+
+        //2. Second Rule
+        String firstName = request.firstName();
+        if((firstName.length() < 2 || firstName.length() > 50) || (!allIsLetters(firstName))){
+            throw new InvalidUserDataException("The first name is not valid");
+        }
+
+        //3. Third Rule
+        String lastName = request.lastName();
+        if((lastName.length() < 2 || lastName.length() > 50) || (!allIsLetters(lastName))){
+            throw new InvalidUserDataException("The last name is not valid");
+        }
+
+        //4. Four Rule
+        if(request.age() < 12 || request.age() > 120){
+            throw new InvalidUserDataException("The age is not valid");
+        }
+
+        //5. Fifth rule
+        String phone = request.phone();
+        if((phone.length() != 10) || (!validPhoneNumber(phone))){
+            throw new InvalidUserDataException("The phone number is not valid");
+        }
+
+        //6. Fifth Rule
+        if(!emailValidatorService.isValid(request.email())){
+            throw new InvalidUserDataException("The email is not validate");
+        }
+
+        //7. Rule
+        if(userRepository.existsByUsername(username)){
+            throw new DuplicateUsernameException("This user already exists, is duplicated");
+        }
+
+        User newUser = new User();
+        newUser.setUsername(request.username());
+        newUser.setFirstName(request.firstName());
+        newUser.setLastName(request.lastName());
+        newUser.setAge(request.age());
+        newUser.setPhone(request.phone());
+        newUser.setEmail(request.email());
+        newUser.setStatus(UserStatus.ACTIVE);
+
+        var savedUser = userRepository.save(newUser);
+        return mapToResponse(savedUser);
     }
 
     /**
@@ -62,6 +114,49 @@ public class UserService {
 
     private UserController.UserResponse mapToResponse(User user) {
         // TODO: mapear los campos de la Entity User al record UserController.UserResponse
-        throw new UnsupportedOperationException("TODO: implementar mapToResponse");
+        return new UserController.UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getPhone(),
+                user.getEmail(),
+                user.getAge(),
+                user.getStatus()
+        );
+    }
+
+    private boolean checkStartAndEnd(String username){
+        return (username.charAt(0) != '_') && (username.charAt(username.length() - 1) != '_');
+    }
+
+    private boolean allIsLowerCaseOrDigitOrGuion(String username){
+        for(char c : username.toCharArray()){
+            if(!Character.isLowerCase(c) || !Character.isDigit(c) || c != '_'){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean allIsLetters(String name){
+        for(char c : name.toCharArray()){
+            if(!Character.isLetter(c)){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean validPhoneNumber(String phoneNumber){
+        for(char c : phoneNumber.toCharArray()){
+            if(!Character.isDigit(c)){
+                return false;
+            }
+        }
+
+        return true;
     }
 }
