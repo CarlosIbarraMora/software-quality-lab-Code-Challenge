@@ -151,11 +151,10 @@ public class UserService {
 
     private boolean allIsLowerCaseOrDigitOrGuion(String username){
         for(char c : username.toCharArray()){
-            if(!Character.isLowerCase(c) || !Character.isDigit(c) || c != '_'){
+            if(!(Character.isLowerCase(c) || Character.isDigit(c) || c == '_')){
                 return false;
             }
         }
-
         return true;
     }
 
