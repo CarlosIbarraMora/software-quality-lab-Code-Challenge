@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <Match>
+        <Or>
+            <Class name="mx.edu.cetys.software_quality_lab.pets.Pet"/>
+            <Class name="mx.edu.cetys.software_quality_lab.users.User"/>
+            <Class name="mx.edu.cetys.software_quality_lab.petstore.Adoption"/>
+        </Or>
+        <Or>
+            <Bug pattern="EI_EXPOSE_REP"/>
+            <Bug pattern="EI_EXPOSE_REP2"/>
+        </Or>
+    </Match>
+</FindBugsFilter>
